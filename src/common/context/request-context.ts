@@ -8,10 +8,16 @@ export interface RequestContext {
   cognitoSub?: string;
   tenantId?: string;
   role?: UserRole;
+  onboarding?: boolean;
 }
 
 export const requestContextStorage = new AsyncLocalStorage<RequestContext>();
 
 export function getRequestContext(): RequestContext | undefined {
   return requestContextStorage.getStore();
+}
+
+export function updateRequestContext(values: Partial<RequestContext>): void {
+  const context = requestContextStorage.getStore();
+  if (context) Object.assign(context, values);
 }

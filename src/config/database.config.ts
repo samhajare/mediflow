@@ -32,7 +32,7 @@ export function databaseOptions(): DataSourceOptions {
     database: required('DB_NAME'),
     username: required('DB_USERNAME'),
     password: required('DB_PASSWORD'),
-    entities: [join(__dirname, '../modules/**/*.entity{.ts,.js}')],
+    entities: [join(__dirname, '../database/entities/*.entity{.ts,.js}')],
     migrations: [join(__dirname, '../database/migrations/*{.ts,.js}')],
     synchronize: false,
     migrationsRun: false,

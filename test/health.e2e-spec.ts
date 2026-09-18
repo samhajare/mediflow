@@ -3,6 +3,7 @@ import { Test } from '@nestjs/testing';
 import { AppModule } from '../src/app.module';
 import { DatabaseModule } from '../src/database/database.module';
 import { configureApp } from '../src/configure-app';
+import { AuthModule } from '../src/modules/auth/auth.module';
 
 @Module({})
 class TestDatabaseModule {}
@@ -13,6 +14,8 @@ describe('Health HTTP endpoints (database boundary replaced)', () => {
   beforeAll(async () => {
     const module = await Test.createTestingModule({ imports: [AppModule] })
       .overrideModule(DatabaseModule)
+      .useModule(TestDatabaseModule)
+      .overrideModule(AuthModule)
       .useModule(TestDatabaseModule)
       .compile();
     app = module.createNestApplication();
