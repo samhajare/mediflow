@@ -1,6 +1,5 @@
 # MediFlow AIDLC — Fresh Modular Monolith
 
-This package replaces the previous Lambda/microservices architecture documents.
 
 ## Chosen direction
 
@@ -22,12 +21,11 @@ This package replaces the previous Lambda/microservices architecture documents.
 
 ## How to use this package
 
-1. Archive or delete the old MediFlow repository content.
-2. Copy this package into the new repository root.
-3. Read `AGENTS.md`.
-4. Read `docs/00-index.md`.
-5. Start with `codex/Task-01-initialize-nestjs.md`.
-6. Implement one task at a time.
-7. Do not ask Codex to build the whole system in one pass.
+1. Copy this package into the new repository root.
+2. Read `AGENTS.md`.
+3. Read `docs/00-index.md`.
+4. Start with `codex/Task-01-initialize-nestjs.md`.
+5. Implement one task at a time.
+6. Do not ask Codex to build the whole system in one pass.
 
 The documents in `docs/` are the approved source of truth. If implementation requirements change, update the relevant document or ADR before changing the architecture.
