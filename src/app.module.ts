@@ -5,6 +5,8 @@ import { HealthController } from './health/health.controller';
 import { AuthModule } from './modules/auth/auth.module';
 import { ClinicsModule } from './modules/clinics/clinics.module';
 import { DoctorsModule } from './modules/doctors/doctors.module';
+import { SchedulesModule } from './modules/schedules/schedules.module';
+import { PatientsModule } from './modules/patients/patients.module';
 @Module({
   imports: [
     ConfigModule.forRoot({ isGlobal: true, ignoreEnvFile: true }),
@@ -12,6 +14,8 @@ import { DoctorsModule } from './modules/doctors/doctors.module';
     AuthModule,
     ClinicsModule,
     DoctorsModule,
+    SchedulesModule,
+    PatientsModule,
   ],
   controllers: [HealthController],
 })
