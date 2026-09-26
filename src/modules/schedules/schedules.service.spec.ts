@@ -12,6 +12,7 @@ describe('SchedulesService', () => {
       findActiveDay: jest.fn().mockResolvedValue([]),
       findSchedules: jest.fn().mockResolvedValue([]),
       findClinic: jest.fn().mockResolvedValue({ timezone: 'Asia/Kolkata' }),
+      findActiveAppointmentStarts: jest.fn().mockResolvedValue([]),
       create: jest.fn((values: Partial<DoctorSchedule>) => values as DoctorSchedule),
       save: jest.fn().mockImplementation(async (value: DoctorSchedule) => value),
     } as unknown as SchedulesRepository;

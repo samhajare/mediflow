@@ -4,27 +4,12 @@ import { AppError } from '../../common/errors/app-error';
 import { DoctorSchedule } from '../../database/entities/doctor-schedule.entity';
 import { CreateScheduleDto } from './schedule.dto';
 import { SchedulesRepository } from './schedules.repository';
+import { generateCandidateSlots } from './slot-generation';
 
 const tenantId = (): string => {
   const value = getRequestContext()?.tenantId;
   if (!value) throw new AppError('USER_MEMBERSHIP_NOT_FOUND', 404, 'Doctor not found.');
   return value;
-};
-const minutes = (value: string): number => {
-  const [hours, mins] = value.split(':').map(Number);
-  return hours * 60 + mins;
-};
-const dateParts = (date: Date, timezone: string): Record<string, number> => {
-  const parts = new Intl.DateTimeFormat('en-US', { timeZone: timezone, year: 'numeric', month: '2-digit', day: '2-digit', hour: '2-digit', minute: '2-digit', second: '2-digit', hourCycle: 'h23' }).formatToParts(date);
-  return Object.fromEntries(parts.filter((part) => part.type !== 'literal').map((part) => [part.type, Number(part.value)]));
-};
-const localToUtc = (date: string, time: string, timezone: string): Date => {
-  const [year, month, day] = date.split('-').map(Number);
-  const [hour, minute] = time.split(':').map(Number);
-  const localAsUtc = Date.UTC(year, month - 1, day, hour, minute);
-  const observed = dateParts(new Date(localAsUtc), timezone);
-  const observedAsUtc = Date.UTC(observed.year, observed.month - 1, observed.day, observed.hour, observed.minute, observed.second);
-  return new Date(localAsUtc - (observedAsUtc - localAsUtc));
 };
 const dateIsValid = (date: string): boolean => {
   const parsed = new Date(`${date}T00:00:00Z`);
@@ -44,6 +29,7 @@ export class SchedulesService {
 
   async create(doctorId: string, dto: CreateScheduleDto): Promise<DoctorSchedule> {
     await this.doctor(doctorId);
+    const minutes = (value: string) => value.split(':').map(Number).reduce((hours, value, index) => index === 0 ? value * 60 : hours + value, 0);
     if (minutes(dto.startTime) >= minutes(dto.endTime)) throw new AppError('VALIDATION_ERROR', 400, 'Schedule start time must be before end time.');
     const tenant = tenantId();
     const existing = await this.repository.findActiveDay(tenant, doctorId, dto.dayOfWeek);
@@ -62,14 +48,10 @@ export class SchedulesService {
     if (!timezone) throw new AppError('CLINIC_NOT_FOUND', 404, 'Clinic not found.');
     const dayOfWeek = new Date(`${date}T12:00:00Z`).getUTCDay();
     const schedules = await this.repository.findActiveDay(doctor.tenantId, doctorId, dayOfWeek);
-    const slots: string[] = [];
-    for (const schedule of schedules) {
-      for (let cursor = minutes(schedule.startTime); cursor + schedule.slotDurationMinutes <= minutes(schedule.endTime); cursor += schedule.slotDurationMinutes) {
-        const hours = String(Math.floor(cursor / 60)).padStart(2, '0');
-        const mins = String(cursor % 60).padStart(2, '0');
-        slots.push(localToUtc(date, `${hours}:${mins}`, timezone).toISOString());
-      }
-    }
+    const candidates = generateCandidateSlots(date, timezone, schedules);
+    const occupied = await this.repository.findActiveAppointmentStarts(doctor.tenantId, doctorId, candidates[0]?.startTime ?? new Date(`${date}T00:00:00Z`), candidates[candidates.length - 1]?.endTime ?? new Date(`${date}T23:59:59Z`));
+    const occupiedTimes = new Set(occupied.map((item) => new Date(item.startTime).getTime()));
+    const slots = candidates.filter((slot) => !occupiedTimes.has(slot.startTime.getTime())).map((slot) => slot.startTime.toISOString());
     return { date, timezone, slots };
   }
 }
