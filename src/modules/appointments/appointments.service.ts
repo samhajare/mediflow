@@ -45,7 +45,7 @@ export class AppointmentsService {
 
   private async saveWithNotification(action: () => Promise<Appointment>): Promise<Appointment> {
     const appointment = await action();
-    try { await this.notifications.appointmentCommitted(appointment); } catch { /* notification failure must not fail the committed appointment */ }
+    await this.notifications.appointmentCommitted(appointment);
     return appointment;
   }
 

@@ -10,6 +10,7 @@ import { AppointmentsController } from './appointments.controller';
 import { AppointmentsRepository } from './appointments.repository';
 import { AppointmentsService } from './appointments.service';
 import { NotificationService } from './notification.service';
+import { NotificationsModule } from '../notifications/notifications.module';
 
-@Module({ imports: [TypeOrmModule.forFeature([Appointment, Clinic, Doctor, DoctorSchedule, Patient]), AuthModule], controllers: [AppointmentsController], providers: [AppointmentsRepository, AppointmentsService, NotificationService] })
+@Module({ imports: [TypeOrmModule.forFeature([Appointment, Clinic, Doctor, DoctorSchedule, Patient]), AuthModule, NotificationsModule], controllers: [AppointmentsController], providers: [AppointmentsRepository, AppointmentsService] })
 export class AppointmentsModule {}

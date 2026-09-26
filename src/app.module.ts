@@ -8,6 +8,7 @@ import { DoctorsModule } from './modules/doctors/doctors.module';
 import { SchedulesModule } from './modules/schedules/schedules.module';
 import { PatientsModule } from './modules/patients/patients.module';
 import { AppointmentsModule } from './modules/appointments/appointments.module';
+import { NotificationsModule } from './modules/notifications/notifications.module';
 @Module({
   imports: [
     ConfigModule.forRoot({ isGlobal: true, ignoreEnvFile: true }),
@@ -18,6 +19,7 @@ import { AppointmentsModule } from './modules/appointments/appointments.module';
     SchedulesModule,
     PatientsModule,
     AppointmentsModule,
+    NotificationsModule,
   ],
   controllers: [HealthController],
 })
